@@ -63,6 +63,8 @@ bool set_option_int(void *args_, const char *option, const int value)
             ocp_qp_partial_condensing_args *pcond_args = (ocp_qp_partial_condensing_args *) sparse_args->pcond_args;
             if (!strcmp(token, "max_iter"))
                 args->hpipm_args->iter_max = value;
+            else if (!strcmp(token, "warm_start"))
+                args->hpipm_args->warm_start = value;
             else if (!strcmp(token, "max_stat"))
                 args->hpipm_args->stat_max = value;
             else if (!strcmp(token, "N2"))
@@ -76,6 +78,8 @@ bool set_option_int(void *args_, const char *option, const int value)
             dense_qp_hpipm_args *args = (dense_qp_hpipm_args *) sparse_args->solver_args;
             if (!strcmp(token, "max_iter"))
                 args->hpipm_args->iter_max = value;
+            else if (!strcmp(token, "warm_start"))
+                args->hpipm_args->warm_start = value;
             else if (!strcmp(token, "max_stat"))
                 args->hpipm_args->stat_max = value;
             else return false;
@@ -96,6 +100,8 @@ bool set_option_int(void *args_, const char *option, const int value)
             // NOTE(dimitris): HPMPC partial condesing has a bug, using hpipm partial condensing instead
             else if (!strcmp(token, "N2"))
                 pcond_args->N2 = value;
+            else if (!strcmp(token, "N2_internal"))  // NOTE(dimitris): do NOT use! (only for debugging)
+                args->N2 = value;
             // partial tightening
             else if (!strcmp(token, "N"))
                 args->N = value;
