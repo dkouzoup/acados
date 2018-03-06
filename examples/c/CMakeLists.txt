@@ -95,9 +95,9 @@ if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_link_libraries(ocp_qp acados)
     add_test(ocp_qp ocp_qp)
 
-    add_executable(ocp_qp_debug ocp_qp_debug.c)
-    target_link_libraries(ocp_qp_debug acados)
-    add_test(ocp_qp_debug ocp_qp_debug)
+    add_executable(ocp_qp_closed_loop_from_lib ocp_qp_closed_loop_from_lib.c)
+    target_link_libraries(ocp_qp_closed_loop_from_lib acados)
+    add_test(ocp_qp_closed_loop_from_lib ocp_qp_closed_loop_from_lib)
 
 # # add_executable(mass_spring_partial_tightening_example
 # #    mass_spring_partial_tightening.c

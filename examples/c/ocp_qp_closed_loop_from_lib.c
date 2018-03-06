@@ -54,7 +54,7 @@ void convert_strvecs_to_single_vec(int n, struct blasfeo_dvec sv[], double *v)
 
 
 
-double compare_with_acado_solution(int N, int nvars, ocp_qp_out *qp_out, double *acado_sol)
+double compare_with_reference_solution(int N, int nvars, ocp_qp_out *qp_out, double *ref_sol)
 {
     double *acados_sol = malloc(nvars*sizeof(double));
 
@@ -65,11 +65,11 @@ double compare_with_acado_solution(int N, int nvars, ocp_qp_out *qp_out, double 
 
     for (int ii = 0; ii < nvars; ii++)
     {
-        diff = acado_sol[ii] - acados_sol[ii];
+        diff = ref_sol[ii] - acados_sol[ii];
         if (diff < 0) diff = - diff;
 
         if (diff > error) error = diff;
-        // printf(" %2.5e\t %2.5e\n", acado_sol[ii], acados_sol[ii]);
+        // printf(" %2.5e\t %2.5e\n", ref_sol[ii], acados_sol[ii]);
         if isnan(acados_sol[ii])
         {
             printf("nans detected in acados solution.\n");
@@ -110,20 +110,25 @@ int main() {
 
     char lib_str[256];
 
-    char solver_in[256] = "HPMPC_B10";
+    char solver_in[256] = "qpOASES_e_N2";
     int nmasses_in = 7;
-    int warmstart_in = 0;
+    int warmstart_in = 1;
 
+# if 0
+    // run simulations with varying N
     int N_ins[] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
     int N_in;
 
     for (int jj = 0; jj < 10; jj++)
     {
     N_in = N_ins[jj];
+#else
+    int N_in = 10;
+#endif
 
     // TODO(dimitris): currently assuming we run it from build dir
     snprintf(lib_str, sizeof(lib_str),
-        "../examples/c/ocp_qp_bugs/ocp_qp_data_nmasses_%d_nsteps_%d_solver_%s_warmstart_%d.so",
+        "../examples/c/ocp_qp_lib_data/ocp_qp_data_nmasses_%d_nsteps_%d_solver_%s_warmstart_%d.so",
         nmasses_in, N_in, solver_in, warmstart_in);
 
     void *lib = dlopen(lib_str, RTLD_NOW);
@@ -365,7 +370,7 @@ int main() {
     for (int ii = 0; ii < dims.N+1; ii++)
         nvars += dims.nx[ii] + dims.nu[ii];
 
-    double *acado_sol;
+    double *ref_sol;
 
     int *acado_iter_ptr;
 
@@ -489,7 +494,7 @@ int main() {
             load_ptr(lib, str, (void **)&acado_iter_ptr);
 
             snprintf(str, sizeof(str), "acado_sol%s_%d", suffix, indx);
-            load_ptr(lib, str, (void **)&acado_sol);
+            load_ptr(lib, str, (void **)&ref_sol);
 
             /************************************************
             * convert data and solve qp
@@ -504,7 +509,7 @@ int main() {
 
             // print_ocp_qp_out(qp_out);
 
-            sol_error[indx] = compare_with_acado_solution(N, nvars, qp_out, acado_sol);
+            sol_error[indx] = compare_with_reference_solution(N, nvars, qp_out, ref_sol);
 
             if (acados_return != ACADOS_SUCCESS)
             {
@@ -587,8 +592,8 @@ int main() {
         write_double_vector_to_txt(sol_error, n_problems, save_str);
     } else
     {
-        #if 0  // to enable comparison with other solvers
-        char custom_str[256] = "hpmpc_ext_cond";
+        #if 0
+        char custom_str[256] = "some_prefix";
 
         snprintf(save_str, sizeof(save_str), "%s_acados_%s_cpu_times.txt", lib_str_no_ext, custom_str);
         write_double_vector_to_txt(min_cpu_times, n_problems, save_str);
@@ -605,7 +610,9 @@ int main() {
 
     printf("\nacados runs with N2 = %d\n", N2);
 
+# if 0
     }  // end of loop over N_ins
+#endif
 
     return 0;
 }
@@ -657,5 +664,4 @@ void choose_solver(int N, char *lib_str, int *N2, int *warm_start, ocp_qp_solver
         printf("warmstart \tnot detected (setting to 0)\n");
         *warm_start = 0;
     }
-    // exit(1);
 }
