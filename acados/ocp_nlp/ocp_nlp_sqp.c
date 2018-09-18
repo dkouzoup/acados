@@ -1167,7 +1167,7 @@ int ocp_nlp_sqp(void *config_, void *dims_, void *nlp_in_, void *nlp_out_,
 
     // save sqp iterations number
     mem->sqp_iter = sqp_iter;
-    mem->time_tot = total_time;
+    mem->time_tot = total_time; // TODO: testing linter
 
     nlp_out->sqp_iter = sqp_iter;
     nlp_out->total_time = total_time;
