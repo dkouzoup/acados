@@ -31,7 +31,8 @@ class ocp_nlp : private ocp
 
     void initialize_solver(std::string solver_name, std::map<std::string, option_t *> options = {});
 
-    void set_init_at_stage(std::vector<double> x_guess = {}, std::vector<double> u_guess = {}, int idx = 0);
+    void set_init_at_stage(std::vector<double> x_guess = {}, std::vector<double> u_guess = {}, 
+        int idx = 0);
 
     ocp_nlp_solution solve(std::vector<double> x_guess = {}, std::vector<double> u_guess = {});
 

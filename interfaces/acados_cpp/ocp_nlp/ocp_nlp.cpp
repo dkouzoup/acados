@@ -213,12 +213,12 @@ void ocp_nlp::initialize_solver(std::string solver_name, std::map<std::string, o
     solver_.reset(ocp_nlp_create(config_.get(), dims_.get(), solver_options_.get()));
 }
 
-void ocp_nlp::set_init_at_stage(std::vector<double> x_guess, std::vector<double> u_guess, 
+void ocp_nlp::set_init_at_stage(std::vector<double> x_guess, std::vector<double> u_guess,
     int idx)
 {
     if (!x_guess.empty() || !u_guess.empty())
     {
-        blasfeo_pack_dvec(d_["nx"].at(idx), x_guess.data(), &result_->ux[idx], 
+        blasfeo_pack_dvec(d_["nx"].at(idx), x_guess.data(), &result_->ux[idx],
             d_["nu"].at(idx));
         blasfeo_pack_dvec(d_["nu"].at(idx), u_guess.data(), &result_->ux[idx], 0);
     }
