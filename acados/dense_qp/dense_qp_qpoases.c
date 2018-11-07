@@ -92,12 +92,12 @@ void dense_qp_qpoases_opts_initialize_default(void *config_, dense_qp_dims *dims
     dense_qp_qpoases_opts *opts = (dense_qp_qpoases_opts *) opts_;
 
     opts->max_cputime = 1000.0;
-    opts->warm_start = 1;
+    opts->warm_start = 0;
     opts->max_nwsr = 1000;
     opts->use_precomputed_cholesky = 0;
     opts->hotstart = 0;
     opts->set_acado_opts = 1;
-    opts->compute_t = 1;
+    opts->compute_t = 0;
 
     return;
 }
@@ -605,6 +605,8 @@ int dense_qp_qpoases(void *config_, dense_qp_in *qp_in, dense_qp_out *qp_out, vo
     info->interface_time += acados_toc(&interface_timer);
     info->total_time = acados_toc(&tot_timer);
     info->num_iter = nwsr;
+
+    // printf("\nqpOASES took %d iterations\n\n", info->num_iter);
 
     // compute slacks
     if (opts->compute_t)
