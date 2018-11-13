@@ -59,8 +59,8 @@ EXAMPLES += mass_spring_fcond_split
 EXAMPLES += mass_spring_offline_fcond_qpoases_split
 EXAMPLES += nonlinear_chain_ocp_nlp
 # EXAMPLES += sim_crane_no_interface
-EXAMPLES += mass_spring_example_no_interface
-EXAMPLES += nonlinear_chain_ocp_nlp_no_interface
+# EXAMPLES += mass_spring_example_no_interface
+# EXAMPLES += nonlinear_chain_ocp_nlp_no_interface
 EXAMPLES += wind_turbine_nmpc
 
 examples: $(EXAMPLES)
@@ -81,8 +81,8 @@ RUN_EXAMPLES += run_mass_spring_fcond_split
 #RUN_EXAMPLES += run_mass_spring_offline_fcond_qpoases_split
 RUN_EXAMPLES += run_nonlinear_chain_ocp_nlp
 # RUN_EXAMPLES += run_sim_crane_no_interface
-RUN_EXAMPLES += run_mass_spring_example_no_interface
-RUN_EXAMPLES += run_nonlinear_chain_ocp_nlp_no_interface
+# RUN_EXAMPLES += run_mass_spring_example_no_interface
+# RUN_EXAMPLES += run_nonlinear_chain_ocp_nlp_no_interface
 RUN_EXAMPLES += run_wind_turbine_nmpc
 
 run_examples: $(RUN_EXAMPLES)
@@ -205,7 +205,6 @@ run_wind_turbine_nmpc:
 
 WT_OBJS =
 WT_OBJS += wt_model_nx3/expl_ode_fun.o
-WT_OBJS += wt_model_nx3/expl_ode_jac.o
 WT_OBJS += wt_model_nx3/expl_vde_for.o
 WT_OBJS += wt_model_nx3/expl_vde_adj.o
 WT_OBJS += wt_model_nx3/impl_ode_fun.o
@@ -335,7 +334,6 @@ CHAIN_OBJS =
 ### explicit ###
 # 2 masses
 CHAIN_OBJS += chain_model/vde_chain_nm2.o
-CHAIN_OBJS += chain_model/jac_chain_nm2.o
 CHAIN_OBJS += chain_model/vde_adj_chain_nm2.o
 #CHAIN_OBJS += chain_model/vde_hess_chain_nm2.o
 CHAIN_OBJS += chain_model/ls_cost_nm2.o
@@ -343,7 +341,6 @@ CHAIN_OBJS += chain_model/ls_costN_nm2.o
 CHAIN_OBJS += chain_model/casadi_erk4_chain_nm2.o
 # 3 masses
 CHAIN_OBJS += chain_model/vde_chain_nm3.o
-CHAIN_OBJS += chain_model/jac_chain_nm3.o
 CHAIN_OBJS += chain_model/vde_adj_chain_nm3.o
 #CHAIN_OBJS += chain_model/vde_hess_chain_nm3.o
 CHAIN_OBJS += chain_model/ls_cost_nm3.o
@@ -351,7 +348,6 @@ CHAIN_OBJS += chain_model/ls_costN_nm3.o
 CHAIN_OBJS += chain_model/casadi_erk4_chain_nm3.o
 # 4 masses
 CHAIN_OBJS += chain_model/vde_chain_nm4.o
-CHAIN_OBJS += chain_model/jac_chain_nm4.o
 CHAIN_OBJS += chain_model/vde_adj_chain_nm4.o
 #CHAIN_OBJS += chain_model/vde_hess_chain_nm4.o
 CHAIN_OBJS += chain_model/ls_cost_nm4.o
@@ -359,7 +355,6 @@ CHAIN_OBJS += chain_model/ls_costN_nm4.o
 CHAIN_OBJS += chain_model/casadi_erk4_chain_nm4.o
 # 5 masses
 CHAIN_OBJS += chain_model/vde_chain_nm5.o
-CHAIN_OBJS += chain_model/jac_chain_nm5.o
 CHAIN_OBJS += chain_model/vde_adj_chain_nm5.o
 #CHAIN_OBJS += chain_model/vde_hess_chain_nm5.o
 CHAIN_OBJS += chain_model/ls_cost_nm5.o
@@ -367,7 +362,6 @@ CHAIN_OBJS += chain_model/ls_costN_nm5.o
 CHAIN_OBJS += chain_model/casadi_erk4_chain_nm5.o
 # 6 masses
 CHAIN_OBJS += chain_model/vde_chain_nm6.o
-CHAIN_OBJS += chain_model/jac_chain_nm6.o
 CHAIN_OBJS += chain_model/vde_adj_chain_nm6.o
 #CHAIN_OBJS += chain_model/vde_hess_chain_nm6.o
 CHAIN_OBJS += chain_model/ls_cost_nm6.o
