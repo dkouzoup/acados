@@ -419,6 +419,8 @@ void ocp_nlp::set_dynamics(const casadi::Function &model, std::map<std::string, 
     sim_solver_plan sim_plan;
     if (to_string(options.at("integrator")) == "rk4")
         sim_plan.sim_solver = ERK;
+    else if (to_string(options.at("integrator")) == "irk")
+        sim_plan.sim_solver = IRK;
     else
         throw std::invalid_argument("Invalid integrator.");
 
@@ -443,14 +445,54 @@ void ocp_nlp::set_dynamics(const casadi::Function &model, std::map<std::string, 
         plan_->nlp_dynamics[i] = CONTINUOUS_MODEL;
     }
 
-    module_["expl_vde_for"] = generate_forward_vde(model);
+    if (sim_plan.sim_solver == ERK)
+    {
+        module_["expl_vde_for"] = generate_forward_vde(model);
 
-    cached_model_ = module_["expl_vde_for"].name();
+        cached_model_ = module_["expl_vde_for"].name();
 
-    for (int stage = 0; stage < N; ++stage)
-        nlp_set_model_in_stage(config_.get(), nlp_.get(), stage, "expl_vde_for",
-                               (void *) module_["expl_vde_for"].as_external_function());
+        for (int stage = 0; stage < N; ++stage)
+            nlp_set_model_in_stage(config_.get(), nlp_.get(), stage, "expl_vde_for",
+                                (void *) module_["expl_vde_for"].as_external_function());
+    }
+    else if (sim_plan.sim_solver == IRK)
+    {
+        // assumes explicit model is given
+        casadi::SX x = model.sx_in("x");
+        casadi::SX u = model.sx_in("u");
+        int_t nx = x.size1();
 
+        casadi::SX rhs = casadi::SX::vertcat(model(vector<casadi::SX>({x, u})));
+
+        casadi::SX xdot = casadi::SX::sym("xdot", nx, 1);
+        casadi::SX z = casadi::SX::sym("z", 0, 1);
+        rhs = rhs - xdot;
+
+        casadi::Function implicit_model = casadi::Function(model.name(),
+                        {x, xdot, u, z},
+                        {rhs}, {"x", "xdot", "u", "z"}, {"rhs"});
+
+        module_["impl_ode_fun_jac_x_xdot_z"] =
+                generate_impl_ode_fun_jac_x_xdot_z(implicit_model);
+
+        module_["impl_ode_fun"] = generate_impl_ode_fun(implicit_model);
+
+        module_["impl_ode_jac_x_xdot_u_z"] = generate_impl_ode_jac_x_xdot_u_z(implicit_model);
+
+        cached_model_ = module_["impl_ode_fun"].name();
+
+        for (int stage = 0; stage < N; ++stage)
+        {
+            nlp_set_model_in_stage(config_.get(), nlp_.get(), stage, "impl_ode_fun_jac_x_xdot_z",
+                    (void *) module_["impl_ode_fun_jac_x_xdot_z"].as_external_function());
+
+            nlp_set_model_in_stage(config_.get(), nlp_.get(), stage, "impl_ode_fun",
+                    (void *) module_["impl_ode_fun"].as_external_function());
+
+            nlp_set_model_in_stage(config_.get(), nlp_.get(), stage, "impl_ode_jac_x_xdot_u_z",
+                    (void *) module_["impl_ode_jac_x_xdot_u_z"].as_external_function());
+        }
+    }
 };
 
 void ocp_nlp::set_bound(std::string bound, int stage, std::vector<double> new_bound)
